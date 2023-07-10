@@ -32,17 +32,17 @@ import io.gravitee.rest.api.service.UserService;
 import io.gravitee.rest.api.service.cockpit.services.V4ApiService;
 import io.gravitee.rest.api.service.common.GraviteeContext;
 import io.reactivex.rxjava3.observers.TestObserver;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Ashraful Hasan (ashraful.hasan at graviteesource.com)
  * @author GraviteeSource Team
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class V4ApiCommandHandlerTest {
 
     @Mock
@@ -58,7 +58,7 @@ public class V4ApiCommandHandlerTest {
     private V4ApiCommand command;
     private ApiEntity apiEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         command = new V4ApiCommand();
         command.setId("test-id");

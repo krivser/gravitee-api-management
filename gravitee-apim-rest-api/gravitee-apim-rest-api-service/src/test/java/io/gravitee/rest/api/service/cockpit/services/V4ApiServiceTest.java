@@ -15,7 +15,8 @@
  */
 package io.gravitee.rest.api.service.cockpit.services;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,17 +28,17 @@ import io.gravitee.rest.api.model.v4.plan.PlanEntity;
 import io.gravitee.rest.api.service.v4.ApiService;
 import io.gravitee.rest.api.service.v4.ApiStateService;
 import io.gravitee.rest.api.service.v4.PlanService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Ashraful Hasan (ashraful.hasan at graviteesource.com)
  * @author GraviteeSource Team
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class V4ApiServiceTest {
 
     @Mock
@@ -51,7 +52,7 @@ public class V4ApiServiceTest {
 
     private V4ApiService service;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         service = new V4ApiService(apiServiceV4, planServiceV4, apiStateService);
     }
@@ -80,10 +81,10 @@ public class V4ApiServiceTest {
         verify(apiStateService, times(1)).deploy(any(), any(), any(), any());
     }
 
-    @Test(expected = JsonProcessingException.class)
-    public void should_throw_exception() throws JsonProcessingException {
+    @Test
+    public void should_throw_exception() {
         final String userId = "any-user-id";
-        service.createPublishApi(userId, "{invalid-json}");
+        assertThrows(JsonProcessingException.class, () -> service.createPublishApi(userId, "{invalid-json}"));
     }
 
     private String validApiDefinition() {

@@ -28,6 +28,8 @@ import io.gravitee.rest.api.model.v4.plan.PlanEntity;
 import io.gravitee.rest.api.service.v4.ApiService;
 import io.gravitee.rest.api.service.v4.ApiStateService;
 import io.gravitee.rest.api.service.v4.PlanService;
+import io.reactivex.rxjava3.observers.TestObserver;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +60,7 @@ public class V4ApiServiceTest {
     }
 
     @Test
-    public void should_create_publish_api() throws JsonProcessingException {
+    public void should_create_publish_api() throws JsonProcessingException, InterruptedException {
         final String userId = "any-user-id";
         final ApiEntity apiEntity = new ApiEntity();
         apiEntity.setId("any-id");
@@ -71,8 +73,10 @@ public class V4ApiServiceTest {
         when(apiStateService.deploy(any(), any(), any(), any())).thenReturn(startedApi);
         when(apiServiceV4.update(any(), any(), any(), any())).thenReturn(startedApi);
 
-        ApiEntity result = service.createPublishApi(userId, validApiDefinition());
-        assertNotNull(result);
+        TestObserver<ApiEntity> observer = service.createPublishApi(userId, validApiDefinition()).test();
+        observer.await();
+
+        observer.assertValue(Objects::nonNull);
         verify(apiServiceV4, times(1)).create(any(), any(), any());
         verify(apiServiceV4, times(1)).update(any(), any(), any(), any());
         verify(planServiceV4, times(1)).create(any(), any());

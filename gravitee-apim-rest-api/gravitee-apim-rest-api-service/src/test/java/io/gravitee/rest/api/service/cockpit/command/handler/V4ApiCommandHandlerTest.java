@@ -31,6 +31,7 @@ import io.gravitee.rest.api.model.v4.api.ApiEntity;
 import io.gravitee.rest.api.service.UserService;
 import io.gravitee.rest.api.service.cockpit.services.V4ApiService;
 import io.gravitee.rest.api.service.common.GraviteeContext;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,11 +82,11 @@ public class V4ApiCommandHandlerTest {
 
     @Test
     public void handleSuccessfulCommand() throws InterruptedException, JsonProcessingException {
-        when(v4ApiService.createPublishApi(anyString(), anyString())).thenReturn(apiEntity);
+        when(v4ApiService.createPublishApi(anyString(), anyString())).thenReturn(Single.just(apiEntity));
 
         TestObserver<V4ApiReply> observer = commandHandler.handle(command).test();
-
         observer.await();
+
         observer.assertValue(reply ->
             reply.getCommandId().equals(command.getId()) &&
             reply.getCommandStatus().equals(CommandStatus.SUCCEEDED) &&

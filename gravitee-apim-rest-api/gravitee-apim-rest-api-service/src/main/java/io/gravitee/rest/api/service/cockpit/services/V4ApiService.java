@@ -23,7 +23,6 @@ import io.gravitee.definition.model.v4.property.Property;
 import io.gravitee.rest.api.model.api.ApiDeploymentEntity;
 import io.gravitee.rest.api.model.api.ApiLifecycleState;
 import io.gravitee.rest.api.model.v4.api.ApiEntity;
-import io.gravitee.rest.api.model.v4.api.GenericApiEntity;
 import io.gravitee.rest.api.model.v4.api.NewApiEntity;
 import io.gravitee.rest.api.model.v4.api.UpdateApiEntity;
 import io.gravitee.rest.api.model.v4.api.properties.PropertyEntity;
@@ -37,6 +36,7 @@ import io.gravitee.rest.api.service.common.GraviteeContext;
 import io.gravitee.rest.api.service.v4.ApiService;
 import io.gravitee.rest.api.service.v4.ApiStateService;
 import io.gravitee.rest.api.service.v4.PlanService;
+import io.reactivex.rxjava3.core.Single;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,36 +65,36 @@ public class V4ApiService {
         this.graviteeMapper = new GraviteeMapper();
     }
 
-    public ApiEntity createPublishApi(String userId, String apiDefinition) throws JsonProcessingException {
+    public Single<ApiEntity> createPublishApi(String userId, String apiDefinition) throws JsonProcessingException {
         final NewApiEntity newApiEntity = graviteeMapper.readValue(apiDefinition, NewApiEntity.class);
         final ExecutionContext executionContext = GraviteeContext.getExecutionContext();
 
-        final ApiEntity newApi = apiServiceV4.create(executionContext, newApiEntity, userId);
-
-        publishPlan(executionContext, newApi.getId());
-
-        publishApi(executionContext, newApi, userId);
-
-        return (ApiEntity) syncDeployment(executionContext, newApi.getId(), userId);
+        return Single
+            .just(apiServiceV4.create(executionContext, newApiEntity, userId))
+            .flatMap(newApi -> publishPlan(executionContext, newApi.getId()))
+            .flatMap(planEntity -> publishApi(executionContext, planEntity.getApiId(), userId))
+            .flatMap(apiEntity -> syncDeployment(executionContext, apiEntity.getId(), userId));
     }
 
-    private GenericApiEntity syncDeployment(ExecutionContext executionContext, String apiId, String userId) {
+    private Single<ApiEntity> syncDeployment(ExecutionContext executionContext, String apiId, String userId) {
         final ApiDeploymentEntity deploymentEntity = new ApiDeploymentEntity();
-        return apiStateService.deploy(executionContext, apiId, userId, deploymentEntity);
+
+        return Single.just((ApiEntity) apiStateService.deploy(executionContext, apiId, userId, deploymentEntity));
     }
 
-    private void publishPlan(ExecutionContext executionContext, String apiId) {
+    private Single<PlanEntity> publishPlan(ExecutionContext executionContext, String apiId) {
         final NewPlanEntity newPlanEntity = createKeylessPlan(apiId);
-        final PlanEntity planEntity = planServiceV4.create(executionContext, newPlanEntity);
 
-        planServiceV4.publish(executionContext, planEntity.getId());
+        return Single
+            .just(planServiceV4.create(executionContext, newPlanEntity))
+            .map(planEntity -> planServiceV4.publish(executionContext, planEntity.getId()));
     }
 
-    private void publishApi(ExecutionContext executionContext, ApiEntity newApi, String userId) {
-        final ApiEntity updatedApi = (ApiEntity) apiStateService.start(executionContext, newApi.getId(), userId);
+    private Single<ApiEntity> publishApi(ExecutionContext executionContext, String apiId, String userId) {
+        final ApiEntity updatedApi = (ApiEntity) apiStateService.start(executionContext, apiId, userId);
         final UpdateApiEntity apiToUpdate = createUpdateApiEntity(updatedApi);
 
-        apiServiceV4.update(executionContext, updatedApi.getId(), apiToUpdate, userId);
+        return Single.just(apiServiceV4.update(executionContext, updatedApi.getId(), apiToUpdate, userId));
     }
 
     private NewPlanEntity createKeylessPlan(String apiId) {

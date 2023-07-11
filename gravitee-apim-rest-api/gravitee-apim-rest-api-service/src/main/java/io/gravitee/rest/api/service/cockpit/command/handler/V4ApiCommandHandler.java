@@ -15,6 +15,7 @@
  */
 package io.gravitee.rest.api.service.cockpit.command.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.gravitee.cockpit.api.command.Command;
 import io.gravitee.cockpit.api.command.CommandHandler;
 import io.gravitee.cockpit.api.command.CommandStatus;
@@ -22,7 +23,6 @@ import io.gravitee.cockpit.api.command.v4api.V4ApiCommand;
 import io.gravitee.cockpit.api.command.v4api.V4ApiPayload;
 import io.gravitee.cockpit.api.command.v4api.V4ApiReply;
 import io.gravitee.rest.api.model.UserEntity;
-import io.gravitee.rest.api.model.v4.api.ApiEntity;
 import io.gravitee.rest.api.service.UserService;
 import io.gravitee.rest.api.service.cockpit.services.V4ApiService;
 import io.gravitee.rest.api.service.common.GraviteeContext;
@@ -57,18 +57,19 @@ public class V4ApiCommandHandler implements CommandHandler<V4ApiCommand, V4ApiRe
     public Single<V4ApiReply> handle(V4ApiCommand command) {
         final V4ApiPayload payload = command.getPayload();
         final UserEntity user = userService.findBySource(GraviteeContext.getExecutionContext(), "cockpit", payload.getUserId(), true);
-
         try {
-            final ApiEntity apiEntity = v4ApiService.createPublishApi(user.getId(), payload.getApiDefinition());
-            final V4ApiReply reply = new V4ApiReply(command.getId(), CommandStatus.SUCCEEDED);
+            return v4ApiService
+                .createPublishApi(user.getId(), payload.getApiDefinition())
+                .flatMap(apiEntity -> {
+                    final V4ApiReply reply = new V4ApiReply(command.getId(), CommandStatus.SUCCEEDED);
+                    reply.setApiId(apiEntity.getId());
+                    reply.setApiName(apiEntity.getName());
+                    reply.setApiVersion(apiEntity.getApiVersion());
+                    logger.info("Successfully create Api {}", apiEntity.getName());
 
-            reply.setApiId(apiEntity.getId());
-            reply.setApiName(apiEntity.getName());
-            reply.setApiVersion(apiEntity.getApiVersion());
-            logger.info("Successfully create Api {}", apiEntity.getName());
-
-            return Single.just(reply);
-        } catch (Exception exception) {
+                    return Single.just(reply);
+                });
+        } catch (JsonProcessingException exception) {
             logger.error("An error occurred while creating Api", exception);
 
             return Single.just(new V4ApiReply(command.getId(), CommandStatus.FAILED));

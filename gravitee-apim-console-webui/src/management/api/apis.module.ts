@@ -245,7 +245,7 @@ const states: Ng2StateDeclaration[] = [
       useAngularMaterial: true,
       docs: null,
       apiPermissions: {
-        only: ['api-subscription-u'],
+        only: ['api-subscription-r', 'api-subscription-u'],
       },
     },
   },

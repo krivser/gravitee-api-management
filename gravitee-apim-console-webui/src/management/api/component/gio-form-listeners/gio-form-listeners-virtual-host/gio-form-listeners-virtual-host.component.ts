@@ -46,16 +46,22 @@ export class GioFormListenersVirtualHostComponent extends GioFormListenersContex
   @Input()
   public domainRestrictions: string[] = [];
 
+  @Input()
+  public mode: 'update' | 'read';
+
   public newListenerFormGroup(listener: PathV4): FormGroup {
     const { host, hostDomain } = extractDomainToHost(listener?.host, this.domainRestrictions);
 
+    const disabled = this.mode === 'read';
     return new FormGroup({
-      host: new FormControl(listener?.host || ''),
+      host: new FormControl({ value: listener?.host || '', disabled }),
       // Private controls for internal process
-      _hostSubDomain: new FormControl(host || ''),
-      _hostDomain: new FormControl(hostDomain || ''),
-      path: new FormControl(listener.path),
-      overrideAccess: new FormControl(listener.overrideAccess || false),
+      _hostSubDomain: new FormControl({value: host || '', disabled
+    }),
+      _hostDomain: new FormControl({value: hostDomain || '', disabled
+    }),
+      path: new FormControl({value: listener.path, disabled }),
+      overrideAccess: new FormControl({value: listener.overrideAccess || false, disabled}),
     });
   }
 

@@ -62,6 +62,8 @@ const DEFAULT_LISTENER: PathV4 = {
 export class GioFormListenersContextPathComponent implements OnInit, OnDestroy, ControlValueAccessor, AsyncValidator {
   @Input()
   public pathsToIgnore: PathV4[] = [];
+  @Input()
+  public mode: 'update' | 'read';
 
   public listeners: PathV4[] = [DEFAULT_LISTENER];
   public mainForm: FormGroup;
@@ -166,7 +168,7 @@ export class GioFormListenersContextPathComponent implements OnInit, OnDestroy, 
 
   public newListenerFormGroup(listener: PathV4) {
     return new FormGroup({
-      path: new FormControl(listener.path || '/'),
+      path: new FormControl({value: listener.path || '/', disabled: this.mode === 'read'}),
     });
   }
 

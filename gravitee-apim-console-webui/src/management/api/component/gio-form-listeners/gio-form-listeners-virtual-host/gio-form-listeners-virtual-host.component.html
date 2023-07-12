@@ -79,11 +79,11 @@
       </td>
       <td class="gio-form-listeners__table__row__td">
         <gio-form-slide-toggle class="gio-form-listeners__table__field">
-          <mat-slide-toggle gioFormSlideToggle aria-label="Enable override access" formControlName="overrideAccess"></mat-slide-toggle>
+          <mat-slide-toggle gioFormSlideToggle aria-label="Enable override access" formControlName="overrideAccess" ></mat-slide-toggle>
           <gio-form-label>Enable</gio-form-label>
         </gio-form-slide-toggle>
       </td>
-      <td class="gio-form-listeners__table__row__td">
+      <td class="gio-form-listeners__table__row__td" *ngIf="mode === 'update'">
         <button
           mat-icon-button
           type="button"

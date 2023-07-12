@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import io.gravitee.common.component.Lifecycle;
 import io.gravitee.definition.model.DefinitionVersion;
 import io.gravitee.repository.management.api.ApiRepository;
 import io.gravitee.repository.management.api.search.ApiCriteria;
@@ -194,9 +195,9 @@ public class ApiAuthorizationServiceImpl extends AbstractService implements ApiA
             return Optional.empty();
         }
         Query<GenericApiEntity> searchEngineQuery = convert(apiQuery).build();
-        if (isBlank(searchEngineQuery.getQuery())) {
-            return Optional.empty();
-        }
+//        if (isBlank(searchEngineQuery.getQuery())) {
+//            return Optional.empty();
+//        }
         SearchResult matchApis = searchEngineService.search(executionContext, searchEngineQuery);
         return Optional.of(matchApis.getDocuments());
     }

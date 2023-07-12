@@ -55,6 +55,8 @@ export class ApiPortalPlanListComponent implements OnInit, OnDestroy {
   public isV2Api: boolean;
   public planMenuItems: PlanMenuItemVM[];
   private routeBase: string;
+  private canUpdate = false;
+  private isKubernetesOrigin = false;
 
   constructor(
     @Inject(UIRouterStateParams) private readonly ajsStateParams,
@@ -81,7 +83,9 @@ export class ApiPortalPlanListComponent implements OnInit, OnDestroy {
         tap((api) => {
           this.api = api;
           this.isV2Api = api && api.definitionVersion === 'V2';
-          this.isReadOnly = !this.permissionService.hasAnyMatching(['api-plan-u']) || api.definitionContext?.origin === 'KUBERNETES';
+          this.canUpdate = this.permissionService.hasAnyMatching(['api-plan-u']);
+          this.isKubernetesOrigin = api.definitionContext?.origin === 'KUBERNETES';
+          this.isReadOnly = !this.canUpdate || this.isKubernetesOrigin;
 
           if (!this.isReadOnly && !this.displayedColumns.includes('drag-icon')) {
             this.displayedColumns.unshift('drag-icon');

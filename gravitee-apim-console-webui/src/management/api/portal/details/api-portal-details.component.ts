@@ -87,7 +87,7 @@ export class ApiPortalDetailsComponent implements OnInit, OnDestroy {
 
   public isQualityEnabled = false;
 
-  public isReadOnly = false;
+  public isKubernetesOrigin = false;
   public updateState: 'TO_UPDATE' | 'IN_PROGRESS' | 'UPDATED' | undefined;
 
   constructor(
@@ -130,7 +130,7 @@ export class ApiPortalDetailsComponent implements OnInit, OnDestroy {
           ),
         ),
         tap(([api, categories]) => {
-          this.isReadOnly = !this.permissionService.hasAnyMatching(['api-definition-u']) || api.definitionContext?.origin === 'KUBERNETES';
+          this.isKubernetesOrigin = api.definitionContext?.origin === 'KUBERNETES';
 
           this.apiId = api.id;
           this.api = api;
@@ -170,42 +170,42 @@ export class ApiPortalDetailsComponent implements OnInit, OnDestroy {
             name: new FormControl(
               {
                 value: api.name,
-                disabled: this.isReadOnly,
+                disabled: this.isKubernetesOrigin,
               },
               [Validators.required],
             ),
             version: new FormControl(
               {
                 value: api.apiVersion,
-                disabled: this.isReadOnly,
+                disabled: this.isKubernetesOrigin,
               },
               [Validators.required],
             ),
             description: new FormControl({
               value: api.description,
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
             labels: new FormControl({
               value: api.labels,
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
             categories: new FormControl({
               value: api.categories,
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
             emulateV4Engine: new FormControl({
               value: api.definitionVersion === 'V2' && (api as ApiV2).executionMode === 'V4_EMULATION_ENGINE',
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
           });
           this.apiImagesForm = new FormGroup({
             picture: new FormControl({
               value: api._links['pictureUrl'] ? [api._links['pictureUrl']] : [],
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
             background: new FormControl({
               value: api._links['backgroundUrl'] ? [api._links['backgroundUrl']] : [],
-              disabled: this.isReadOnly,
+              disabled: this.isKubernetesOrigin,
             }),
           });
           this.parentForm = new FormGroup({

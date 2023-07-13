@@ -93,7 +93,7 @@ describe('Subscription creation dialog', () => {
   let httpTestingController: HttpTestingController;
 
   describe('Test customApiKey input', () => {
-    describe('With custom apiKey enabled and shared apiKey disabled', () => {
+    describe('With custom API Key enabled and shared API Key disabled', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           declarations: [TestComponent],
@@ -214,7 +214,7 @@ describe('Subscription creation dialog', () => {
         expect(await harness.isCustomApiKeyInputDisplayed()).toBeFalsy();
       });
     });
-    describe('With custom apiKey enabled and shared api key enabled', () => {
+    describe('With custom API Key enabled and shared apiKey enabled', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           declarations: [TestComponent],
@@ -253,7 +253,7 @@ describe('Subscription creation dialog', () => {
         httpTestingController.verify();
       });
 
-      it('should not be able to select apikey mode when no subscription and custom api key', async () => {
+      it('should be able to select API Key mode EXCLUSIVE and custom API Key', async () => {
         const applicationWithClientId = fakeApplication({
           id: 'my-app',
           name: 'withClientId',
@@ -310,7 +310,7 @@ describe('Subscription creation dialog', () => {
         expect(req.request.body).toEqual(verifySubscription);
         req.flush({ ok: true });
       });
-      it('should be able to select api key mode EXCLUSIVE and custom api key', async () => {
+      it('should not be able to select API Key mode when no subscription and custom API Key', async () => {
         const applicationWithClientId = fakeApplication({
           id: 'my-app',
           name: 'withClientId',
@@ -359,7 +359,7 @@ describe('Subscription creation dialog', () => {
         expect(req.request.body).toEqual(verifySubscription);
         req.flush({ ok: true });
       });
-      it('should be able to select apiKey mode SHARED and not custom api key', async () => {
+      it('should be able to select API Key mode SHARED and not custom API Key', async () => {
         const applicationWithClientId = fakeApplication({
           id: 'my-app',
           name: 'withClientId',
@@ -406,7 +406,7 @@ describe('Subscription creation dialog', () => {
         expect(await harness.isCustomApiKeyInputDisplayed()).toBeFalsy();
       });
     });
-    describe('With custom apiKey disabled', () => {
+    describe('With custom API Key disabled', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           declarations: [TestComponent],

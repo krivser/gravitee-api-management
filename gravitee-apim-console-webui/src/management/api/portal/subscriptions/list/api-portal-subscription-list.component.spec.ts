@@ -296,7 +296,7 @@ describe('ApiPortalSubscriptionListComponent', () => {
   });
 
   describe('create subscription', () => {
-    it('should create subscription to a api key plan in exclusive api key mode without customApiKey', fakeAsync(async () => {
+    it('should create subscription to an api key plan in exclusive API Key mode without customApiKey', fakeAsync(async () => {
       await init(
         {},
         {
@@ -357,7 +357,7 @@ describe('ApiPortalSubscriptionListComponent', () => {
 
       flush();
     }));
-    it('should create subscription to a api key plan in shared api key mode without customApiKey', fakeAsync(async () => {
+    it('should create subscription to a api key plan in shared API Key mode without customApiKey', fakeAsync(async () => {
       await init(
         {},
         {
@@ -418,7 +418,7 @@ describe('ApiPortalSubscriptionListComponent', () => {
 
       flush();
     }));
-    it('should create subscription to a api key plan without customApiKey', fakeAsync(async () => {
+    it('should create subscription to a API Key plan without customApiKey', fakeAsync(async () => {
       await init();
       const planV4 = fakePlanV4({ generalConditions: undefined });
       const application = fakeApplication();

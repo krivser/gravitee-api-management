@@ -279,7 +279,6 @@ export class ApiPortalSubscriptionListComponent implements OnInit, OnDestroy {
       })
       .afterClosed()
       .pipe(
-        // TODO: do not forget to save the application with apiKeyMode
         filter((result) => !!result),
         switchMap((result) => {
           if (!result?.apiKeyMode) {
